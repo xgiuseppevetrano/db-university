@@ -23,7 +23,7 @@ ON `teachers`.`id` = `course_teacher`.`teacher_id`
 WHERE `course_teacher`.`teacher_id` = 44;
 
 4. Selezionare tutti gli studenti con i dati relativi al corso di laurea a cui sono iscritti e il relativo dipartimento, in ordine alfabetico per cognome e nome
-SELECT `students`.`name`, `students`.`surname`, `degrees`.`name`, `degrees`.`level`, `departments`.`name`
+SELECT `students`.`name`, `students`.`surname`, `degrees`.`name` AS 'corso_laurea', `degrees`.`level` AS 'livello_laurea', `departments`.`name` AS 'dipartimento'
 FROM `students`
 JOIN `degrees`
 ON `degrees`.`id` = `students`.`degree_id`
@@ -32,7 +32,7 @@ ON `departments`.`id` = `degrees`.`department_id`
 ORDER BY `students`.`surname`, `students`.`name`;
 
 5. Selezionare tutti i corsi di laurea con i relativi corsi e insegnanti
-SELECT `degrees`.`name`, `degrees`.`level`, `courses`.`name`, `courses`.`year`, `courses`.`cfu`, `teachers`.`name`, `teachers`.`surname`
+SELECT `degrees`.`name` AS 'corso_laurea', `degrees`.`level` AS 'livello_laurea', `courses`.`name` AS 'nome_corso', `courses`.`year`, `courses`.`cfu`, `teachers`.`name`, `teachers`.`surname`
 FROM `degrees`
 JOIN `courses`
 ON `degrees`.`id` = `courses`.`degree_id`
@@ -42,7 +42,7 @@ JOIN `teachers`
 ON `teachers`.`id` = `course_teacher`.`teacher_id`;
 
 6. Selezionare tutti i docenti che insegnano nel Dipartimento di Matematica (54)
-SELECT DISTINCT `teachers`.`name`, `teachers`.`surname`, `departments`.`name`
+SELECT DISTINCT `teachers`.`name`, `teachers`.`surname`, `departments`.`name` AS 'departments_name'
 FROM `teachers`
 JOIN `course_teacher`
 ON `teachers`.`id` = `course_teacher`.`teacher_id`
@@ -55,4 +55,13 @@ ON `departments`.`id` = `degrees`.`department_id`
 WHERE `departments`.`name` = 'Dipartimento di Matematica';
 
 7. BONUS: Selezionare per ogni studente quanti tentativi d’esame ha sostenuto per superare ciascuno dei suoi esami
-
+SELECT COUNT(`exam_student`.`vote`) AS 'tentativi_esame', `students`.`name`, `students`.`surname`, `courses`.`name` as 'exam'
+FROM `students`
+JOIN `exam_student`
+ON `students`.`id` = `exam_student`.`student_id`
+JOIN `exams`
+ON `exams`.`id` = `exam_student`.`exam_id`
+JOIN `courses`
+ON `courses`.`id` = `exams`.`course_id`
+WHERE `exam_student`.`vote` < 18
+GROUP BY `students`.`id`, `courses`.`id`;
